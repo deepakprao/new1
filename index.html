@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Logic Practice</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+        }
+
+        /* ===== APP CONTAINER ===== */
+        #app {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .header-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .header-actions button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* ===== AUTH PAGES ===== */
+        .auth-container {
+            max-width: 400px;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .auth-container h2 {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #1a1a2e;
+        }
+
+        .auth-container input {
+            width: 100%;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .auth-container input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .auth-container button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: transform 0.2s;
+        }
+
+        .auth-container button:hover {
+            transform: translateY(-2px);
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 16px;
+            color: #666;
+        }
+
+        .auth-link span {
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .auth-link span:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== QUESTION PAGE ===== */
+        .question-container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .question-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .q-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .topic-tag {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .difficulty-tag {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .difficulty-tag.easy { background: #e8f5e9; color: #2e7d32; }
+        .difficulty-tag.medium { background: #fff3e0; color: #e65100; }
+        .difficulty-tag.hard { background: #fce4ec; color: #c62828; }
+
+        .question-text {
+            font-size: 17px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #fafafa;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            background: #f0f4ff;
+            border-color: #667eea;
+            transform: translateX(4px);
+        }
+
+        .option-btn .label {
+            font-weight: 700;
+            color: #667eea;
+            min-width: 30px;
+        }
+
+        .option-btn.correct {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+        }
+
+        .option-btn.wrong {
+            border-color: #f44336;
+            background: #fce4ec;
+        }
+
+        .option-btn.disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        /* ===== FEEDBACK ===== */
+        .feedback-box {
+            margin-top: 20px;
+            padding: 16px 20px;
+            border-radius: 10px;
+        }
+
+        .feedback-box.correct {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .feedback-box.wrong {
+            background: #fce4ec;
+            border-left: 4px solid #f44336;
+        }
+
+        .feedback-box h4 {
+            margin-bottom: 8px;
+        }
+
+        .resources {
+            margin-top: 12px;
+        }
+
+        .resource-link {
+            display: inline-block;
+            padding: 6px 14px;
+            background: #667eea;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            margin: 4px;
+            font-size: 13px;
+        }
+
+        .resource-link:hover {
+            background: #5a6fd6;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* ===== DASHBOARD ===== */
+        .dashboard-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            z-index: 100;
+        }
+
+        .dashboard-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .dashboard-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dashboard-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .dashboard-content h2 {
+            margin-bottom: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .stat-box .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .weak-topic {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #fff3e0;
+            border-radius: 6px;
+            margin: 4px 0;
+        }
+
+        .close-btn {
+            margin-top: 16px;
+            padding: 10px 20px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        .reset-btn {
+            padding: 10px 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* ===== COMPLETE STATE ===== */
+        .complete-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .complete-message h2 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .complete-message .big-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .header h1 { font-size: 20px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .question-container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <!-- App will be rendered here -->
+    </div>
+
+    <script>
+        // =============================================
+        // COMPLETE FRONTEND LOGIC (React-like without React)
+        // =============================================
+
+        const API_URL = 'http://localhost:5000/api';
+
+        // ===== STATE =====
+        let state = {
+            token: localStorage.getItem('token'),
+            user: JSON.parse(localStorage.getItem('user') || 'null'),
+            questions: [],
+            currentQuestionIndex: 0,
+            answered: false,
+            stats: { totalAttempted: 0, totalCorrect: 0, accuracy: 0, totalQuestions: 0 },
+            loading: false,
+            dashboardOpen: false
+        };
+
+        // ===== DOM REFS =====
+        const app = document.getElementById('app');
+
+        // ===== API HELPERS =====
+        async function apiCall(endpoint, options = {}) {
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(state.token && { 'Authorization': `Bearer ${state.token}` })
+            };
+
+            try {
+                const response = await fetch(`${API_URL}${endpoint}`, {
+                    ...options,
+                    headers
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Request failed');
+                return data;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        // ===== RENDER FUNCTIONS =====
+
+        function render() {
+            if (!state.token || !state.user) {
+                renderAuth();
+                return;
+            }
+
+            if (state.loading) {
+                renderLoading();
+                return;
+            }
+
+            if (state.questions.length === 0) {
+                renderLoadingQuestions();
+                return;
+            }
+
+            if (state.currentQuestionIndex >= state.questions.length) {
+                renderComplete();
+                return;
+            }
+
+            renderQuestion();
+        }
+
+        function renderAuth() {
+            const isLogin = state._authMode !== 'register';
+            app.innerHTML = `
+                <div class="auth-container">
+                    <h2>${isLogin ? '🔐 Login' : '📝 Sign Up'}</h2>
+                    ${!isLogin ? `
+                        <input id="auth-name" type="text" placeholder="Full Name" />
+                    ` : ''}
+                    <input id="auth-email" type="email" placeholder="Email" />
+                    <input id="auth-password" type="password" placeholder="Password" />
+                    <button onclick="handleAuth('${isLogin ? 'login' : 'register'}')">
+                        ${isLogin ? 'Login' : 'Sign Up'}
+                    </button>
+                    <div class="auth-link">
+                        ${isLogin ? "Don't have an account? " : "Already have an account? "}
+                        <span onclick="switchAuthMode()">
+                            ${isLogin ? 'Sign Up' : 'Login'}
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLoading() {
+            app.innerHTML = `
+                <div style="text-align:center;padding:40px;">
+                    <h2>⏳ Loading...</h2>
+                </div>
+            `;
+        }
+
+        function renderLoadingQuestions() {
+            app.innerHTML = `
+                <div class="question-container">
+                    <div style="text-align:center;padding:40px;">
+                        <h2>📚 Loading Questions...</h2>
+                        <p style="color:#666;margin-top:8px;">Please wait while we prepare your practice session.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderQuestion() {
+            const q = state.questions[state.currentQuestionIndex];
+            if (!q) {
+                renderComplete();
+                return;
+            }
+
+            const labels = ['A', 'B', 'C', 'D'];
+            let optionsHTML = q.options.map((opt, i) => `
+                <button class="option-btn" data-option="${labels[i]}" onclick="selectOption('${labels[i]}')">
+                    <span class="label">${labels[i]}.</span>
+                    <span>${opt}</span>
+                </button>
+            `).join('');
+
+            app.innerHTML = `
+                <div class="header">
+                    <h1>🎯 Digital Logic Practice</h1>
+                    <div class="header-actions">
+                        <span style="font-size:14px;opacity:0.9;">
+                            ${state.currentQuestionIndex + 1}/${state.questions.length}
+                        </span>
+                        <span style="font-size:14px;opacity:0.9;">
+                            ✅ ${state.stats.totalCorrect} correct
+                        </span>
+                        <button onclick="logout()">🚪 Logout</button>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-meta">
+                        <span class="q-number">Q${q.number}</span>
+                        <span class="topic-tag">${q.topic}</span>
+                        <span class="difficulty-tag ${q.difficulty.toLowerCase()}">${q.difficulty}</span>
+                        <span style="color:#888;font-size:14px;">GATE ${q.year}</span>
+                    </div>
+
+                    <div class="question-text">${q.text}</div>
+
+                    ${q.tips ? `<div style="background:#fff8e1;padding:10px 16px;border-radius:8px;margin-bottom:16px;border-left:4px solid #ffa726;">💡 ${q.tips}</div>` : ''}
+
+                    <div class="options" id="options-container">
+                        ${optionsHTML}
+                    </div>
+
+                    <div id="feedback-area"></div>
+                </div>
+
+                <button class="dashboard-btn" onclick="toggleDashboard()">📊 Dashboard</button>
+                <div id="dashboard-overlay" style="display:none;"></div>
+            `;
+
+            // Restore dashboard state if it was open
+            if (state.dashboardOpen) {
+                renderDashboard();
+            }
+        }
+
+        function renderFeedback(isCorrect, question, correctAnswer, explanation, resources) {
+            const feedbackArea = document.getElementById('feedback-area');
+
+            if (!feedbackArea) return;
+
+            const isCorrectText = isCorrect ? '✅ Correct!' : '❌ Incorrect';
+
+            let html = `
+                <div class="feedback-box ${isCorrect ? 'correct' : 'wrong'}">
+                    <h4>${isCorrectText}</h4>
+                    <p><strong>Answer:</strong> ${correctAnswer}</p>
+                    <p><strong>Explanation:</strong> ${explanation}</p>
+                </div>
+            `;
+
+            if (!isCorrect && resources && resources.length > 0) {
+                html += `
+                    <div class="resources">
+                        <strong>📖 Study Resources:</strong><br>
+                        ${resources.map(r => `
+                            <a href="${r.url}" target="_blank" class="resource-link">🔗 ${r.title}</a>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            html += `
+                <button class="btn btn-primary" onclick="nextQuestion()">
+                    ${isCorrect ? '➡️ Next Question' : '📚 Continue Learning →'}
+                </button>
+            `;
+
+            feedbackArea.innerHTML = html;
+        }
+
+        function renderComplete() {
+            app.innerHTML = `
+                <div class="header">
+                    <h1>🎯 Digital Logic Practice</h1>
+                    <div class="header-actions">
+                        <button onclick="logout()">🚪 Logout</button>
+                    </div>
+                </div>
+
+                <div class="question-container">
+                    <div class="complete-message">
+                        <h2>🎉 Congratulations!</h2>
+                        <p>You've completed all questions in this session!</p>
+                        <div class="big-stats">
+                            <div>
+                                <div style="font-size:28px;font-weight:bold;color:#667eea;">${state.stats.totalAttempted}</div>
+                                <div style="color:#666;font-size:14px;">Attempted</div>
+                            </div>
+                            <div>
+                                <div style="font-size:28px;font-weight:bold;color:#4CAF50;">${state.stats.totalCorrect}</div>
+                                <div style="color:#666;font-size:14px;">Correct</div>
+                            </div>
+                            <div>
+                                <div style="font-size:28px;font-weight:bold;color:#667eea;">${state.stats.accuracy}%</div>
+                                <div style="color:#666;font-size:14px;">Accuracy</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="loadQuestions()">🔄 Practice Again</button>
+                        <button class="btn" style="margin-top:8px;background:#e0e0e0;" onclick="toggleDashboard()">📊 Dashboard</button>
+                    </div>
+                </div>
+
+                <button class="dashboard-btn" onclick="toggleDashboard()">📊 Dashboard</button>
+                <div id="dashboard-overlay" style="display:none;"></div>
+            `;
+        }
+
+        function renderDashboard() {
+            const overlay = document.getElementById('dashboard-overlay');
+            if (!overlay) return;
+
+            if (!state.dashboardOpen) {
+                overlay.style.display = 'none';
+                return;
+            }
+
+            // Fetch dashboard data
+            apiCall('/progress/stats')
+                .then(data => {
+                    overlay.innerHTML = `
+                        <div class="dashboard-overlay" onclick="closeDashboard(event)">
+                            <div class="dashboard-content" onclick="event.stopPropagation()">
+                                <h2>📊 Your Progress</h2>
+
+                                <div class="stats-grid">
+                                    <div class="stat-box">
+                                        <div class="value">${data.totalAttempted || 0}</div>
+                                        <div class="label">Attempted</div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="value" style="color:#4CAF50;">${data.totalCorrect || 0}</div>
+                                        <div class="label">Correct</div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="value">${data.totalAttempted > 0 ? Math.round((data.totalCorrect/data.totalAttempted)*100) : 0}%</div>
+                                        <div class="label">Accuracy</div>
+                                    </div>
+                                </div>
+
+                                ${data.weakTopics && data.weakTopics.length > 0 ? `
+                                    <h3 style="margin-top:12px;">📉 Weak Topics</h3>
+                                    ${data.weakTopics.map(t => `
+                                        <div class="weak-topic">
+                                            <span>${t.topic}</span>
+                                            <span>${t.accuracy}% (${t.total} questions)</span>
+                                        </div>
+                                    `).join('')}
+                                ` : `
+                                    <p style="color:#4CAF50;margin-top:12px;">✅ No weak topics detected! Keep it up!</p>
+                                `}
+
+                                ${data.recentActivity && data.recentActivity.length > 0 ? `
+                                    <h3 style="margin-top:16px;">🕐 Recent Activity</h3>
+                                    ${data.recentActivity.map(a => `
+                                        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;font-size:13px;">
+                                            <span>${a.text}</span>
+                                            <span>${a.correct ? '✅' : '❌'}</span>
+                                        </div>
+                                    `).join('')}
+                                ` : ''}
+
+                                <div style="margin-top:16px;">
+                                    <button class="close-btn" onclick="closeDashboard()">Close</button>
+                                    <button class="reset-btn" onclick="resetProgress()">🔄 Reset Progress</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    overlay.style.display = 'flex';
+                })
+                .catch(err => {
+                    console.error('Dashboard error:', err);
+                });
+        }
+
+        // ===== ACTIONS =====
+
+        async function handleAuth(mode) {
+            const email = document.getElementById('auth-email')?.value;
+            const password = document.getElementById('auth-password')?.value;
+            const name = document.getElementById('auth-name')?.value;
+
+            if (!email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (mode === 'register' && !name) {
+                alert('Please enter your name');
+                return;
+            }
+
+            try {
+                const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
+                const body = mode === 'login' ? { email, password } : { name, email, password };
+
+                const data = await apiCall(endpoint, {
+                    method: 'POST',
+                    body: JSON.stringify(body)
+                });
+
+                state.token = data.token;
+                state.user = data.user;
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                await loadQuestions();
+                render();
+            } catch (error) {
+                alert(error.message || 'Authentication failed');
+            }
+        }
+
+        function switchAuthMode() {
+            state._authMode = state._authMode === 'register' ? 'login' : 'register';
+            render();
+        }
+
+        function logout() {
+            state.token = null;
+            state.user = null;
+            state.questions = [];
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            render();
+        }
+
+        async function loadQuestions() {
+            state.loading = true;
+            state.currentQuestionIndex = 0;
+            state.answered = false;
+            render();
+
+            try {
+                const data = await apiCall('/questions');
+                state.questions = data.questions || [];
+                state.stats.totalQuestions = data.total || 0;
+                state.loading = false;
+                render();
+            } catch (error) {
+                state.loading = false;
+                alert('Failed to load questions. Please try again.');
+                render();
+            }
+        }
+
+        async function selectOption(option) {
+            if (state.answered) return;
+            state.answered = true;
+
+            const q = state.questions[state.currentQuestionIndex];
+
+            // Disable all options
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.add('disabled');
+                if (btn.dataset.option === q.correct) btn.classList.add('correct');
+                if (btn.dataset.option === option && option !== q.correct) btn.classList.add('wrong');
+            });
+
+            try {
+                const data = await apiCall('/questions/answer', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        questionId: q.id,
+                        selectedOption: option,
+                        timeSpent: 0
+                    })
+                });
+
+                state.stats = data.stats || state.stats;
+
+                renderFeedback(
+                    data.isCorrect,
+                    q,
+                    data.correctAnswer,
+                    data.explanation,
+                    data.resources
+                );
+
+            } catch (error) {
+                alert('Failed to submit answer');
+            }
+        }
+
+        function nextQuestion() {
+            state.currentQuestionIndex++;
+            state.answered = false;
+            render();
+        }
+
+        function toggleDashboard() {
+            state.dashboardOpen = !state.dashboardOpen;
+            if (state.dashboardOpen) {
+                renderDashboard();
+            } else {
+                const overlay = document.getElementById('dashboard-overlay');
+                if (overlay) overlay.style.display = 'none';
+            }
+        }
+
+        function closeDashboard(event) {
+            if (event && event.target !== event.currentTarget) return;
+            state.dashboardOpen = false;
+            const overlay = document.getElementById('dashboard-overlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+
+        function resetProgress() {
+            if (!confirm('Reset all progress? This cannot be undone.')) return;
+            // Reset by reloading questions
+            loadQuestions();
+            closeDashboard();
+        }
+
+        // ===== INIT =====
+
+        // Check if token exists and is valid
+        if (state.token) {
+            loadQuestions();
+        } else {
+            render();
+        }
+
+        console.log('🎯 Digital Logic Practice Platform loaded!');
+        console.log('📚 API URL:', API_URL);
+        console.log('👤 Logged in:', !!state.user);
+
+        // Handle Enter key on auth forms
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const loginBtn = document.querySelector('.auth-container button');
+                if (loginBtn) loginBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
